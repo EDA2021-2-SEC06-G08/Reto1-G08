@@ -36,12 +36,30 @@ los mismos.
 """
 
 # Construccion de modelos
+def newCatalog():
+    catalog = {"artists":None,
+    "artworks":None
+    }
+    catalog["artists"] = lt.newList("ARRAY_LIST")
+    catalog["artworks"] = lt.newList()
+    return catalog
 
 # Funciones para agregar informacion al catalogo
+def addArtist(catalog, artist):
+    lt.addLast(catalog["artists"], artist)
+
+def addArtwork(catalog, artwork):
+    lt.addLast(catalog["artworks"], artwork)
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def getLastThree(catalog):
+    sizeArtists = lt.size(catalog["artists"])
+    sizeArtworks = lt.size(catalog["artworks"])
+    last3Artists = lt.subList(catalog["artists"], sizeArtists-2, 3)
+    last3Artworks = lt.subList(catalog["artworks"], sizeArtworks-2, 3)
+    return lt.iterator(last3Artists), lt.iterator(last3Artworks)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

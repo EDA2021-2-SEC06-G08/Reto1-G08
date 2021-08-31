@@ -41,9 +41,29 @@ def printMenu():
     print("3- Listar cronológicamente las adquisiciones")
     print("4- Clasificar las obras de un artista por técnica")
     print("5- Clasificar las obras por la nacionalidad de sus creadores")
+    print("0- Salir")
 
+def initCatalog():
+    """
+    Incializa el catalogo del museo
+    """
+    return controller.initCatalog()
+
+def loadData(catalog):
+    controller.loadData(catalog)
+
+def printLastThree(lastThree):
+    l3Art, l3Aworks = lastThree
+    position = {3:"Antepenultimo", 2:"Penultimo", 1:"Ultimo"}
+    positionArt = {3:"Antepenultima", 2:"Penultima", 1:"Ultima"}
+    i = 3
+    for artist, artwork in zip(l3Art, l3Aworks):
+        print(f"{position[i]} artista:\n {artist}")
+        print(f"{positionArt[i]} obra:\n {artwork}")
+        print("-"*102)
+        i -= 1
+    
 catalog = None
-
 """
 Menu principal
 """
@@ -52,6 +72,12 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
+        catalog = initCatalog()
+        loadData(catalog)
+        print(f"Artistas cargados: {lt.size(catalog['artists'])}")
+        print(f"Obras cargadas: {lt.size(catalog['artworks'])}")
+        lastThree = controller.getLastThree(catalog)
+        printLastThree(lastThree)
 
     elif int(inputs[0]) == 2:
         pass
