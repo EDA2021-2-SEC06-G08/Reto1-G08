@@ -23,6 +23,7 @@
 import config as cf
 import model
 import csv
+from datetime import date
 
 
 """
@@ -42,14 +43,38 @@ def loadArtists(catalog):
     filename = cf.data_dir + "MoMa/Artists-utf8-small.csv"
     input_file = csv.DictReader(open(filename, encoding="utf-8"))
     for artist in input_file:
-        model.addArtist(catalog, artist)
+        model.addArtist(catalog, {"ConstituentID":artist["ConstituentID"], "DisplayName":artist["DisplayName"], "Nationality":artist["Nationality"], "BeginDate":int(artist["BeginDate"])})
+
+def toFloat(string):
+    try:
+        return float(string)
+    except ValueError:
+        return None
 
 def loadArtworks(catalog):
     filename= cf.data_dir + "MoMA/Artworks-utf8-small.csv"
     input_file = csv.DictReader(open(filename, encoding="utf-8"))
     for artwork in input_file:
-        model.addArtwork(catalog, artwork)
+        filtered = {"Title":artwork["Title"], 
+        "ConstituentID":eval(artwork["ConstituentID"]),
+        "Date":int(artwork["Date"]),
+        "Medium":artwork["Medium"],
+        "Dimensions":artwork["Dimensions"],
+        "CreditLine":artwork["CreditLine"],
+        "Department":artwork["Department"],
+        "Classification":artwork["Classification"],
+        "Weight (kg)":toFloat(artwork["Weight (kg)"]),
+        "Width (cm)":toFloat(artwork["Width (cm)"]),
+        "Length (cm)":toFloat(artwork["Length (cm)"]),
+        "Height (cm)":toFloat(artwork["Height (cm)"]),
+        "Depth (cm)":toFloat(artwork["Depth (cm)"]),
+        "Circumference (cm)":toFloat(artwork["Circumference (cm)"]),
+        "Diameter (cm)":toFloat(artwork["Diameter (cm)"]),
+        "DateAcquired":date.fromisoformat(artwork["DateAcquired"])}
+        model.addArtwork(catalog, filtered)
 
+c = initCatalog()
+loadArtworks(c)
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
