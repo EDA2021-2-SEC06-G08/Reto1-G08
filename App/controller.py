@@ -20,11 +20,12 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from App.model import sortArtists
 import config as cf
 import model
 import csv
 from datetime import date
-
+import re
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -38,12 +39,14 @@ def initCatalog():
 def loadData(catalog):
     loadArtists(catalog)
     loadArtworks(catalog)
+    sortArtists(catalog)
+    sortArtworks(catalog)
 
 def loadArtists(catalog):
     filename = cf.data_dir + "MoMa/Artists-utf8-small.csv"
     input_file = csv.DictReader(open(filename, encoding="utf-8"))
     for artist in input_file:
-        model.addArtist(catalog, {"ConstituentID":int(artist["ConstituentID"]), "DisplayName":artist["DisplayName"], "Nationality":artist["Nationality"], "BeginDate":int(artist["BeginDate"])})
+        model.addArtist(catalog, {"ConstituentID":int(artist["ConstituentID"]),"Gender":artist["Gender"], "DisplayName":artist["DisplayName"], "Nationality":artist["Nationality"], "BeginDate":int(artist["BeginDate"])})
 
 def toFloat(string):
     try:
@@ -55,8 +58,13 @@ def toDate(string):
     try:
         return date.fromisoformat(string)
     except ValueError:
-        return None
+        return date(1,1,1)
 
+def dateToInt(string):
+    try:
+        return int(re.search("\d{4}")[0])
+    except TypeError:
+        return 0
 def loadArtworks(catalog):
     filename= cf.data_dir + "MoMA/Artworks-utf8-small.csv"
     input_file = csv.DictReader(open(filename, encoding="utf-8"))
@@ -80,10 +88,21 @@ def loadArtworks(catalog):
         model.addArtwork(catalog, filtered)
 
 # Funciones de ordenamiento
+def sortArtists(catalog):
+    model.sortArtists(catalog)
+
+def sortArtworks(catalog):
+    model.sortArtworks(catalog)
 
 # Funciones de consulta sobre el catálogo
 def getLastThree(catalog):
     return model.getLastThree(catalog)
+
+def getArtistsCronOrder(catalog, iyear, fyear):
+    """
+    Retorna los datos de los artistas que estan en el rango de años pasados por parametro
+    """
+    return model.getArtistsCronOrder(catalog["artists"], iyear, fyear)
 
 
 if __name__ == "__main__":

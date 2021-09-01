@@ -62,6 +62,18 @@ def printLastThree(lastThree):
         print(f"{positionArt[i]} obra:\n {artwork}")
         print("-"*102)
         i -= 1
+
+def printArtistsCronOrder(data, iyear, fyear):
+    print(f"Artistas en orden cronologico desde {iyear} hasta {fyear}")
+    print(f"Numero total de artistas: {data['NumTot']}")
+    print("Primeros 3 artistas rango:")
+    for artista in lt.iterator(data["Primeros3"]):
+        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}")
+    print("-"*100)
+    for artista in lt.iterator(data["Ultimos3"]):
+        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}")
+
+
     
 catalog = None
 """
@@ -80,7 +92,10 @@ while True:
         printLastThree(lastThree)
 
     elif int(inputs[0]) == 2:
-        pass
+        iyear = int(input("Ingrese el año inicial: "))
+        fyear = int(input("Ingrese el año final: "))
+        artis_co = controller.getArtistsCronOrder(catalog, iyear, fyear)
+        printArtistsCronOrder(artis_co, iyear, fyear)
 
     else:
         sys.exit(0)

@@ -40,7 +40,7 @@ def newCatalog():
     catalog = {"artists":None,
     "artworks":None
     }
-    catalog["artists"] = lt.newList("ARRAY_LIST")
+    catalog["artists"] = lt.newList("ARRAY_LIST", key="BeginDate")
     catalog["artworks"] = lt.newList()
     return catalog
 
@@ -61,6 +61,33 @@ def getLastThree(catalog):
     last3Artworks = lt.subList(catalog["artworks"], sizeArtworks-2, 3)
     return lt.iterator(last3Artists), lt.iterator(last3Artworks)
 
+def getArtistsCronOrder(ArtistLt, iyear, fyear):
+    datos = {"NumTot":0,
+            "Primeros3":lt.newList("ARRAY_LIST"),
+            "Ultimos3":None}
+    maxi = 0
+    for i, artists in enumerate(lt.iterator(ArtistLt),1):
+        if iyear <= artists["BeginDate"] <= fyear:
+            datos["NumTot"] += 1
+            if datos["NumTot"] <= 3:
+                lt.addLast(datos["Primeros3"],artists)
+            if i > maxi:
+                maxi = i
+    datos["Ultimos3"] = lt.subList(ArtistLt,maxi-2, 3)
+    return datos
+    
+    
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+def compareArtistsbyDate(element1, element2):
+    return element1["BeginDate"] < element2["BeginDate"]
+
+def compareArtworksbyAcquired(element1, element2):
+    return element1["DateAcquired"] < element2["DateAcquired"]
 
 # Funciones de ordenamiento
+def sortArtists(catalog):
+    sa.sort(catalog["artists"],compareArtistsbyDate)
+
+def sortArtworks(catalog):
+    sa.sort(catalog["artworks"], compareArtworksbyAcquired)
