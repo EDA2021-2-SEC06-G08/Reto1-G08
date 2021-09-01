@@ -41,6 +41,7 @@ def printMenu():
     print("3- Listar cronológicamente las adquisiciones")
     print("4- Clasificar las obras de un artista por técnica")
     print("5- Clasificar las obras por la nacionalidad de sus creadores")
+    print("6- Transportar obras de un departamento")
     print("0- Salir")
 
 def initCatalog():
