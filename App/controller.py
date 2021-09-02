@@ -20,7 +20,6 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
-from App.model import sortArtists
 import config as cf
 import model
 import csv
@@ -39,6 +38,7 @@ def initCatalog():
 def loadData(catalog):
     loadArtists(catalog)
     loadArtworks(catalog)
+    loadArtistsNames(catalog)
     sortArtists(catalog)
     sortArtworks(catalog)
 
@@ -47,6 +47,31 @@ def loadArtists(catalog):
     input_file = csv.DictReader(open(filename, encoding="utf-8"))
     for artist in input_file:
         model.addArtist(catalog, {"ConstituentID":int(artist["ConstituentID"]),"Gender":artist["Gender"], "DisplayName":artist["DisplayName"], "Nationality":artist["Nationality"], "BeginDate":int(artist["BeginDate"])})
+
+def loadArtworks(catalog):
+    filename= cf.data_dir + "MoMA/Artworks-utf8-small.csv"
+    input_file = csv.DictReader(open(filename, encoding="utf-8"))
+    for artwork in input_file:
+        filtered = {"Title":artwork["Title"], 
+        "ConstituentID":eval(artwork["ConstituentID"]),
+        "Date":dateToInt(artwork["Date"]),
+        "Medium":artwork["Medium"],
+        "Dimensions":artwork["Dimensions"],
+        "CreditLine":artwork["CreditLine"],
+        "Department":artwork["Department"],
+        "Classification":artwork["Classification"],
+        "Weight (kg)":toFloat(artwork["Weight (kg)"]),
+        "Width (cm)":toFloat(artwork["Width (cm)"]),
+        "Length (cm)":toFloat(artwork["Length (cm)"]),
+        "Height (cm)":toFloat(artwork["Height (cm)"]),
+        "Depth (cm)":toFloat(artwork["Depth (cm)"]),
+        "Circumference (cm)":toFloat(artwork["Circumference (cm)"]),
+        "Diameter (cm)":toFloat(artwork["Diameter (cm)"]),
+        "DateAcquired":toDate(artwork["DateAcquired"])}
+        model.addArtwork(catalog, filtered)
+
+def loadArtistsNames(catalog):
+    model.loadArtistsNames(catalog)
 
 def toFloat(string):
     try:
@@ -62,30 +87,10 @@ def toDate(string):
 
 def dateToInt(string):
     try:
-        return int(re.search("\d{4}")[0])
+        return int(re.search("\d{4}",string)[0])
     except TypeError:
         return 0
-def loadArtworks(catalog):
-    filename= cf.data_dir + "MoMA/Artworks-utf8-small.csv"
-    input_file = csv.DictReader(open(filename, encoding="utf-8"))
-    for artwork in input_file:
-        filtered = {"Title":artwork["Title"], 
-        "ConstituentID":eval(artwork["ConstituentID"]),
-        "Date":artwork["Date"],
-        "Medium":artwork["Medium"],
-        "Dimensions":artwork["Dimensions"],
-        "CreditLine":artwork["CreditLine"],
-        "Department":artwork["Department"],
-        "Classification":artwork["Classification"],
-        "Weight (kg)":toFloat(artwork["Weight (kg)"]),
-        "Width (cm)":toFloat(artwork["Width (cm)"]),
-        "Length (cm)":toFloat(artwork["Length (cm)"]),
-        "Height (cm)":toFloat(artwork["Height (cm)"]),
-        "Depth (cm)":toFloat(artwork["Depth (cm)"]),
-        "Circumference (cm)":toFloat(artwork["Circumference (cm)"]),
-        "Diameter (cm)":toFloat(artwork["Diameter (cm)"]),
-        "DateAcquired":toDate(artwork["DateAcquired"])}
-        model.addArtwork(catalog, filtered)
+
 
 # Funciones de ordenamiento
 def sortArtists(catalog):
@@ -104,7 +109,8 @@ def getArtistsCronOrder(catalog, iyear, fyear):
     """
     return model.getArtistsCronOrder(catalog["artists"], iyear, fyear)
 
+def getArtworksCronOrder(catalog, idate, fdate):
 
-if __name__ == "__main__":
-    c = initCatalog()
-    loadArtworks(c)
+    return model.getArtworksCronOrder(catalog, toDate(idate), toDate(fdate))
+
+
