@@ -69,6 +69,7 @@ def getLastThree(catalog):
     return lt.iterator(last3Artists), lt.iterator(last3Artworks)
 
 def getArtistsCronOrder(ArtistLt, iyear, fyear):
+    #Mirar si hacer busqueda binaria para encontrar donde empezar
     datos = {"NumTot":0,
             "Primeros3":lt.newList("ARRAY_LIST"),
             "Ultimos3":None}
@@ -80,6 +81,8 @@ def getArtistsCronOrder(ArtistLt, iyear, fyear):
                 lt.addLast(datos["Primeros3"],artists)
             if i > maxi:
                 maxi = i
+        if artists["BeginDate"] > fyear:
+            break
     datos["Ultimos3"] = lt.subList(ArtistLt,maxi-2, 3)
     return datos
 
@@ -98,6 +101,7 @@ def get_names(constituentdIds, dictNames):
 
 
 def getArtworksCronOrder(catalog, idate, fdate):
+    #Mirar si hacer busqueda binaria para encontrar donde empezar
     datos = {"NumTot":0,
             "Primeros3":lt.newList("ARRAY_LIST"),
             "Ultimos3":lt.newList("ARRAY_LIST")}
@@ -112,7 +116,8 @@ def getArtworksCronOrder(catalog, idate, fdate):
                 lt.addLast(datos["Primeros3"],with_names)
             if i > maxi:
                 maxi = i
-    b = lt.subList(catalog["artworks"],maxi-2, 3)
+        if artworks("DateAcquired") > fdate:
+            break      
     for artwork in lt.iterator(lt.subList(catalog["artworks"],maxi-2, 3)):
         names = get_names(artwork["ConstituentID"], catalog["artists_names"])
         with_names = {key : value for key, value in artwork.items() if key != "ConstituentID"}

@@ -83,14 +83,14 @@ def printArtworksCronOrder(data, idate, fdate):
     for obra in lt.iterator(data["Primeros3"]):
         nombres = ", ".join(name for name in obra['Artists'])
         print(f"{obra['Title']} por {nombres}, fecha: {obra['Date']}, Medio: {obra['Medium']}, Dimensiones: {obra['Dimensions']}")
-        print("\n")
+        print("")
     print("-"*100)
     print("Ultimas 3 obras del rango")
     print("")
     for obra in lt.iterator(data["Ultimos3"]):
         nombres = ", ".join(name for name in obra['Artists'])
         print(f"{obra['Title']} por {nombres}, fecha: {obra['Date']}, Medio: {obra['Medium']}, Dimensiones: {obra['Dimensions']}")
-        print("\n")
+        print("")
 
 catalog = None
 """
