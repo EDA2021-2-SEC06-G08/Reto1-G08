@@ -38,10 +38,11 @@ los mismos.
 # Construccion de modelos
 def newCatalog():
     catalog = {"artists":None,
-    "artworks":None
+    "artworks":None,
+    "artists_names":{}
     }
-    catalog["artists"] = lt.newList("ARRAY_LIST")
-    catalog["artworks"] = lt.newList()
+    catalog["artists"] = lt.newList("ARRAY_LIST", key="BeginDate")
+    catalog["artworks"] = lt.newList("ARRAY_LIST")
     return catalog
 
 # Funciones para agregar informacion al catalogo
@@ -50,6 +51,12 @@ def addArtist(catalog, artist):
 
 def addArtwork(catalog, artwork):
     lt.addLast(catalog["artworks"], artwork)
+
+def loadArtistsNames(catalog):
+    for artist in lt.iterator(catalog["artists"]):
+        name, constituentId = artist["DisplayName"], artist["ConstituentID"]
+        catalog["artists_names"][name] = constituentId
+        catalog["artists_names"][constituentId] = name
 
 # Funciones para creacion de datos
 
@@ -61,6 +68,73 @@ def getLastThree(catalog):
     last3Artworks = lt.subList(catalog["artworks"], sizeArtworks-2, 3)
     return lt.iterator(last3Artists), lt.iterator(last3Artworks)
 
+def getArtistsCronOrder(ArtistLt, iyear, fyear):
+    #Mirar si hacer busqueda binaria para encontrar donde empezar
+    datos = {"NumTot":0,
+            "Primeros3":lt.newList("ARRAY_LIST"),
+            "Ultimos3":None}
+    maxi = 0
+    for i, artists in enumerate(lt.iterator(ArtistLt),1):
+        if iyear <= artists["BeginDate"] <= fyear:
+            datos["NumTot"] += 1
+            if datos["NumTot"] <= 3:
+                lt.addLast(datos["Primeros3"],artists)
+            if i > maxi:
+                maxi = i
+        if artists["BeginDate"] > fyear:
+            break
+    datos["Ultimos3"] = lt.subList(ArtistLt,maxi-2, 3)
+    return datos
+
+def get_names(constituentdIds, dictNames):
+    ls = []
+    if constituentdIds:
+        for id in constituentdIds:
+            try:
+                ls.append(dictNames[id])
+            except KeyError:
+                ls.append("Name not listed")
+        return ls
+    else:
+        return ["No name listed"]
+
+
+
+def getArtworksCronOrder(catalog, idate, fdate):
+    #Mirar si hacer busqueda binaria para encontrar donde empezar
+    datos = {"NumTot":0,
+            "Primeros3":lt.newList("ARRAY_LIST"),
+            "Ultimos3":lt.newList("ARRAY_LIST")}
+    maxi = 0
+    for i, artworks in enumerate(lt.iterator(catalog["artworks"]),1):
+        if idate <= artworks["DateAcquired"] <= fdate:
+            datos["NumTot"] += 1
+            if datos["NumTot"] <= 3:
+                names = get_names(artworks["ConstituentID"], catalog["artists_names"])
+                with_names = {key : value for key, value in artworks.items() if key != "ConstituentID"}
+                with_names["Artists"] = names
+                lt.addLast(datos["Primeros3"],with_names)
+            if i > maxi:
+                maxi = i
+        if artworks["DateAcquired"] > fdate:
+            break      
+    for artwork in lt.iterator(lt.subList(catalog["artworks"],maxi-2, 3)):
+        names = get_names(artwork["ConstituentID"], catalog["artists_names"])
+        with_names = {key : value for key, value in artwork.items() if key != "ConstituentID"}
+        with_names["Artists"] = names
+        lt.addLast(datos["Ultimos3"],with_names)
+    return datos
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+def compareArtistsbyDate(element1, element2):
+    return element1["BeginDate"] < element2["BeginDate"]
+
+def compareArtworksbyAcquired(element1, element2):
+    return element1["DateAcquired"] < element2["DateAcquired"]
 
 # Funciones de ordenamiento
+def sortArtists(catalog):
+    sa.sort(catalog["artists"],compareArtistsbyDate)
+
+def sortArtworks(catalog):
+    sa.sort(catalog["artworks"], compareArtworksbyAcquired)

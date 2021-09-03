@@ -63,7 +63,36 @@ def printLastThree(lastThree):
         print(f"{positionArt[i]} obra:\n {artwork}")
         print("-"*102)
         i -= 1
-    
+
+def printArtistsCronOrder(data, iyear, fyear):
+    print(f"Artistas en orden cronologico desde {iyear} hasta {fyear}")
+    print(f"Numero total de artistas en el rango de años: {data['NumTot']}")
+    print("Primeros 3 artistas rango:")
+    for artista in lt.iterator(data["Primeros3"]):
+        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}")
+    print("-"*100)
+    print("Ultimos 3 artistas del rango:")
+    for artista in lt.iterator(data["Ultimos3"]):
+        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}")
+
+
+def printArtworksCronOrder(data, idate, fdate):
+    print(f"Obras adquiridas en orden cronologico desde la fecha {idate} hasta {fdate}")
+    print(f"Numero total de obras en el rango de fechas: {data['NumTot']}")
+    print("Primeras 3 obras del rango:")
+    print("")
+    for obra in lt.iterator(data["Primeros3"]):
+        nombres = ", ".join(name for name in obra['Artists'])
+        print(f"{obra['Title']} por {nombres}, fecha: {obra['Date']}, Medio: {obra['Medium']}, Dimensiones: {obra['Dimensions']}")
+        print("")
+    print("-"*100)
+    print("Ultimas 3 obras del rango")
+    print("")
+    for obra in lt.iterator(data["Ultimos3"]):
+        nombres = ", ".join(name for name in obra['Artists'])
+        print(f"{obra['Title']} por {nombres}, fecha: {obra['Date']}, Medio: {obra['Medium']}, Dimensiones: {obra['Dimensions']}")
+        print("")
+
 catalog = None
 """
 Menu principal
@@ -81,8 +110,16 @@ while True:
         printLastThree(lastThree)
 
     elif int(inputs[0]) == 2:
-        pass
+        iyear = int(input("Ingrese el año inicial: "))
+        fyear = int(input("Ingrese el año final: "))
+        artis_co = controller.getArtistsCronOrder(catalog, iyear, fyear)
+        printArtistsCronOrder(artis_co, iyear, fyear)
 
+    elif int(inputs[0]) == 3:
+        idate = input("Ingrese la fecha inicial (AAAA-MM-DD): ")
+        fdate = input("Ingrese la fecha final (AAAA-MM-DD): ")
+        adquis_co = controller.getArtworksCronOrder(catalog, idate, fdate)
+        printArtworksCronOrder(adquis_co, idate, fdate)
     else:
         sys.exit(0)
 sys.exit(0)
