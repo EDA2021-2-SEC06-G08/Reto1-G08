@@ -116,7 +116,7 @@ def getArtworksCronOrder(catalog, idate, fdate):
                 lt.addLast(datos["Primeros3"],with_names)
             if i > maxi:
                 maxi = i
-        if artworks("DateAcquired") > fdate:
+        if artworks["DateAcquired"] > fdate:
             break      
     for artwork in lt.iterator(lt.subList(catalog["artworks"],maxi-2, 3)):
         names = get_names(artwork["ConstituentID"], catalog["artists_names"])

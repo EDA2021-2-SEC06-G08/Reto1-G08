@@ -71,6 +71,7 @@ def printArtistsCronOrder(data, iyear, fyear):
     for artista in lt.iterator(data["Primeros3"]):
         print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}")
     print("-"*100)
+    print("Ultimos 3 artistas del rango:")
     for artista in lt.iterator(data["Ultimos3"]):
         print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}")
 
