@@ -93,6 +93,18 @@ def printArtworksCronOrder(data, idate, fdate):
         print(f"{obra['Title']} por {nombres}, fecha: {obra['Date']}, Medio: {obra['Medium']}, Dimensiones: {obra['Dimensions']}")
         print("")
 
+#editado
+def printArtworksByMedium (data, name):
+    print(f"El total de obras de {name} es: {data['TotObras']}")
+    print(f"El total de técnicas usadas por {name} es: {data['TotMedios']}")
+    print(f"La técnica más utilizada por {name} es: {data['MedMasUsado']}")
+    print( f"Listado de obras con la técnica {data['MedMasUsado']}")
+    print(100*"-")
+    for i in data["ObrasMedMasUsado"] :
+        print (data[i])
+    return 
+#editado
+
 catalog = None
 """
 Menu principal
@@ -120,6 +132,14 @@ while True:
         fdate = input("Ingrese la fecha final (AAAA-MM-DD): ")
         adquis_co = controller.getArtworksCronOrder(catalog, idate, fdate)
         printArtworksCronOrder(adquis_co, idate, fdate)
+
+#Editado
+    elif int(inputs[0]) == 4:
+        name = input("Ingrese el nombre del artista: ")
+        artworks_co = controller.getArtworksByMedium(catalog, name)
+        printArtworksByMedium(artworks_co, name)        
+#Editado
+
     else:
         sys.exit(0)
 sys.exit(0)

@@ -25,6 +25,7 @@
  """
 
 
+from typing import Counter
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import shellsort as sa
@@ -124,6 +125,38 @@ def getArtworksCronOrder(catalog, idate, fdate):
         with_names["Artists"] = names
         lt.addLast(datos["Ultimos3"],with_names)
     return datos
+
+
+#editado
+def getArtworksByMedium(catalog, name):
+    datos = {"TotObras": 0,
+            "TotMedios": 0,
+            "MedMasUsado": None}
+    medios = {} 
+#cada medio es una llave con un una lista como valor con un dicc por cada obra con -> 
+#titulo, fecha de la obra, medio, dimensiones
+    mayor = 0
+    constID = catalog["artist_names"][name]
+    
+    for i in catalog["artworks"]:      #     [{obra}]
+        if i["ConstituentID"] == constID:
+            if i["Medium"] not in medios:
+                medios[i["Medium"]] = lt.newList("ARRAY_LIST") 
+                dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
+                lt.addLast(medios[i["Medium"]], dicc)
+                datos["TotMedios"] += 1
+            if i["Medium"] in medios:
+                dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
+                lt.addLast(medios[i["Medium"]], dicc)    
+            if lt.size(medios[i["Medium"]]) > mayor:    #que pasa si hay dos tecnicas iguales?
+                mayor = lt.size(medios[i["Medium"]])
+                datos["MedMasUsado"] = medios[i["Medium"]]
+            datos["TotObras"] += 1
+    datos["ObrasMedMasUsado"] = medios[datos["MedMasUsado"]]
+    return datos 
+#editado
+
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareArtistsbyDate(element1, element2):
