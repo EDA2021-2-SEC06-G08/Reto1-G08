@@ -100,9 +100,9 @@ def printArtworksByMedium (data, name):
     print(f"La técnica más utilizada por {name} es: {data['MedMasUsado']}")
     print( f"Listado de obras con la técnica {data['MedMasUsado']}")
     print(100*"-")
-    for i in data["ObrasMedMasUsado"] :
-        print (data[i])
-    return 
+    for artwork in lt.iterator(data["ObrasMedMasUsado"]):     #elements?
+        print(artwork) 
+    print(100*"-")
 #editado
 
 catalog = None
