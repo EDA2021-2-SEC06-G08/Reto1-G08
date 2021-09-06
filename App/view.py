@@ -95,15 +95,16 @@ def printArtworksCronOrder(data, idate, fdate):
 
 #editado
 def printArtworksByMedium (data, name):
-    print(f"El total de obras de {name} es: {data['TotObras']}")
-    print(f"El total de técnicas usadas por {name} es: {data['TotMedios']}")
-    print(f"La técnica más utilizada por {name} es: {data['MedMasUsado']}")
-    print( f"Listado de obras con la técnica {data['MedMasUsado']}")
+    print(f"{38*'-'} Req. No. 3 Answer {38*'-'}")
+    print(f"{name} with MoMA ID {data['constID']} has {data['TotObras']} pieces in his/her name at the museum.")
+    print(f"There are {data['TotMedios']} different mediums/techniques in his/her work.\n")
+    print(f"His/her most used Medium/Technique is {data['MedMasUsado']} with {lt.size(data['ObrasMedMasUsado'])} pieces")
+    print(f"These pieces are:")
     print(100*"-")
     for artwork in lt.iterator(data["ObrasMedMasUsado"]):     #elements?
-        print(artwork) 
+        print(artwork)  #esta repetido el primer dato
     print(100*"-")
-#editado
+#editado  
 
 catalog = None
 """

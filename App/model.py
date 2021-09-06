@@ -131,30 +131,29 @@ def getArtworksCronOrder(catalog, idate, fdate):
 def getArtworksByMedium(catalog, name):
     datos = {"TotObras": 0,
             "TotMedios": 0,
-            "MedMasUsado": None}
+            "MedMasUsado": None,
+            "constID": None}
     medios = {} 
 #cada medio es una llave con un una lista como valor con un dicc por cada obra con -> 
 #titulo, fecha de la obra, medio, dimensiones
     mayor = 0
-    constID = catalog["artists_names"][name]
+    datos["constID"] = catalog["artists_names"][name]
     
     for i in lt.iterator(catalog["artworks"]):      #     [{obra1}, {obra2}]
-        if constID in i["ConstituentID"] :
+        if datos["constID"] in i["ConstituentID"] :
+            if i["Medium"] in medios:
+                dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
+                lt.addLast(medios[i["Medium"]], dicc)
             if i["Medium"] not in medios:
                 medios[i["Medium"]] = lt.newList("ARRAY_LIST")
                 dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
                 lt.addLast(medios[i["Medium"]], dicc)
-                datos["TotMedios"] += 1
-            if i["Medium"] in medios:
-                dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
-                lt.addLast(medios[i["Medium"]], dicc)    
+                datos["TotMedios"] += 1    
             if lt.size(medios[i["Medium"]]) > mayor: #elements? #que pasa si hay dos tecnicas iguales en cantidad de obras?
-                mayor = lt.size(medios[i["Medium"]])    #elements?
-                print(type(medios[i["Medium"]]))
+                mayor = lt.size(medios[i["Medium"]])    #elements?  type(medios[i["Medium"]]) es dict
                 datos["MedMasUsado"] = medios[i["Medium"]]["elements"][0]["Medio"] #elements?  #guarda solo el medio no la lista
             datos["TotObras"] += 1
-    datos["ObrasMedMasUsado"] = medios[datos["MedMasUsado"]]
-    print(type(medios[datos["MedMasUsado"]]))
+    datos["ObrasMedMasUsado"] = medios[datos["MedMasUsado"]] # type(medios[datos["MedMasUsado"]]) es dict
     return datos 
 #editado
 
