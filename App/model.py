@@ -136,7 +136,7 @@ def getArtworksByMedium(catalog, name):
 #cada medio es una llave con un una lista como valor con un dicc por cada obra con -> 
 #titulo, fecha de la obra, medio, dimensiones
     mayor = 0
-    constID = catalog["artist_names"][name]
+    constID = catalog["artists_names"][name]
     
     for i in catalog["artworks"]:      #     [{obra}]
         if constID in i["ConstituentID"]:
