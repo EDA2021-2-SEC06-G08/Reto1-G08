@@ -139,7 +139,7 @@ def getArtworksByMedium(catalog, name):
     constID = catalog["artist_names"][name]
     
     for i in catalog["artworks"]:      #     [{obra}]
-        if i["ConstituentID"] == constID:
+        if constID in i["ConstituentID"]:
             if i["Medium"] not in medios:
                 medios[i["Medium"]] = lt.newList("ARRAY_LIST") 
                 dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
@@ -148,7 +148,7 @@ def getArtworksByMedium(catalog, name):
             if i["Medium"] in medios:
                 dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
                 lt.addLast(medios[i["Medium"]], dicc)    
-            if lt.size(medios[i["Medium"]]) > mayor:    #que pasa si hay dos tecnicas iguales?
+            if lt.size(medios[i["Medium"]]) > mayor: #que pasa si hay dos tecnicas iguales en cantidad de obras?
                 mayor = lt.size(medios[i["Medium"]])
                 datos["MedMasUsado"] = medios[i["Medium"]]
             datos["TotObras"] += 1
