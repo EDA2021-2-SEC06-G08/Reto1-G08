@@ -94,7 +94,6 @@ def printArtworksCronOrder(data, idate, fdate):
         print("")
 
 
-#editado
 def printArtworksByMedium (data, name):
     print("\n")
     print(f"{41*'-'} Req. No.3 Answer {41*'-'}")
@@ -103,11 +102,11 @@ def printArtworksByMedium (data, name):
     print(f"His/her most used Medium/Technique is {data['MedMasUsado']} with {lt.size(data['ObrasMedMasUsado'])} pieces.")
     print(f"These pieces are:")
     print(100*"-")
-    for artwork in lt.iterator(data["ObrasMedMasUsado"]):  #elements? #data["ObrasMedMasUsado"] = (medios[datos["MedMasUsado"]]) -> dict 
+    for artwork in lt.iterator(data["ObrasMedMasUsado"]): 
         print(artwork) 
     print(100*"-")
     print("\n")
-#editado  
+  
 
 
 catalog = None
