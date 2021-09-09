@@ -44,11 +44,11 @@ def printMenu():
     print("6- Transportar obras de un departamento")
     print("0- Salir")
 
-def initCatalog():
+def initCatalog(typeList):
     """
     Incializa el catalogo del museo
     """
-    return controller.initCatalog()
+    return controller.initCatalog(typeList)
 
 def loadData(catalog):
     controller.loadData(catalog)
@@ -101,8 +101,9 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
+        typeL = input("Ingrese el tipo de lista que desee: 1 para Array, cualquier otro valor para SingleLinked")
         print("Cargando información de los archivos ....")
-        catalog = initCatalog()
+        catalog = initCatalog(typeL)
         loadData(catalog)
         print(f"Artistas cargados: {lt.size(catalog['artists'])}")
         print(f"Obras cargadas: {lt.size(catalog['artworks'])}")
@@ -116,10 +117,18 @@ while True:
         printArtistsCronOrder(artis_co, iyear, fyear)
 
     elif int(inputs[0]) == 3:
-        idate = input("Ingrese la fecha inicial (AAAA-MM-DD): ")
-        fdate = input("Ingrese la fecha final (AAAA-MM-DD): ")
-        adquis_co = controller.getArtworksCronOrder(catalog, idate, fdate)
-        printArtworksCronOrder(adquis_co, idate, fdate)
+        prueba = input("Ingrese el numero 1 si desea hacer pruebas de ordenamiento: ")
+        if prueba == "1":
+            muestra = int(input("Ingrese el tamaño que desea de muestra: "))
+            algo = int(input("Ingrese un numero del 1 al 4 para escoger el tipo de ordenamiento (Insertion, Shell, Merge o Quick Sorts) :"))
+            results = controller.sortingTests(catalog, muestra, algo)
+        """
+        Se comenta la implementacion del requerimiento ya que los datos no estan ordenados
+        """
+        # idate = input("Ingrese la fecha inicial (AAAA-MM-DD): ")
+        # fdate = input("Ingrese la fecha final (AAAA-MM-DD): ")
+        # adquis_co = controller.getArtworksCronOrder(catalog, idate, fdate)
+        # printArtworksCronOrder(adquis_co, idate, fdate)
     else:
         sys.exit(0)
 sys.exit(0)

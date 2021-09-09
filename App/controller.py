@@ -31,8 +31,8 @@ El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
-def initCatalog():
-    return model.newCatalog()
+def initCatalog(typeList):
+    return model.newCatalog(typeList)
 
 # Funciones para la carga de datos
 def loadData(catalog):
@@ -40,7 +40,10 @@ def loadData(catalog):
     loadArtworks(catalog)
     loadArtistsNames(catalog)
     sortArtists(catalog)
-    sortArtworks(catalog)
+    """ Se comenta sort arwtorks para poder hacer el laboratorio 4 pues los cambios necesarios del laboratorio
+    alteran lo que se tiene implementado de codigo.
+    """
+    #sortArtworks(catalog)
 
 def loadArtists(catalog):
     filename = cf.data_dir + "MoMa/Artists-utf8-small.csv"
@@ -99,6 +102,10 @@ def sortArtists(catalog):
 def sortArtworks(catalog):
     model.sortArtworks(catalog)
 
+#Lab4
+def sortingTest(catalog, sample, algo):
+    return model.sortingTest(catalog, sample, algo)
+
 # Funciones de consulta sobre el catálogo
 def getLastThree(catalog):
     return model.getLastThree(catalog)
@@ -112,5 +119,6 @@ def getArtistsCronOrder(catalog, iyear, fyear):
 def getArtworksCronOrder(catalog, idate, fdate):
 
     return model.getArtworksCronOrder(catalog, toDate(idate), toDate(fdate))
+
 
 

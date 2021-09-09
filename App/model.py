@@ -27,7 +27,8 @@
 
 import config as cf
 from DISClib.ADT import list as lt
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import shellsort as sa, insertionsort as ins, mergesort as ms, quicksort as qs
+from time import process_time as ptime 
 assert cf
 
 """
@@ -36,13 +37,13 @@ los mismos.
 """
 
 # Construccion de modelos
-def newCatalog():
+def newCatalog(typeList):
     catalog = {"artists":None,
     "artworks":None,
     "artists_names":{}
     }
-    catalog["artists"] = lt.newList("ARRAY_LIST", key="BeginDate")
-    catalog["artworks"] = lt.newList("ARRAY_LIST")
+    catalog["artists"] = lt.newList("ARRAY_LIST" if typeList == "1" else "SINGLE_LINKED")
+    catalog["artworks"] = lt.newList("ARRAY_LIST" if typeList == "1" else "SINGLE_LINKED")
     return catalog
 
 # Funciones para agregar informacion al catalogo
@@ -124,12 +125,24 @@ def getArtworksCronOrder(catalog, idate, fdate):
         with_names["Artists"] = names
         lt.addLast(datos["Ultimos3"],with_names)
     return datos
+    
+#Lab4
+def sortingTest(catalog, sample, algo):
+    algorithm = {1:ins, 2: sa, 3: ms, 4: qs}
+    maxs = lt.size(catalog["artworks"])
+    sublist = lt.subList(catalog["artworks"], 1, sample if sample < maxs else maxs)
+    sublist = sublist.copy()
+    start = ptime()
+    algorithm[algo].sort(sublist, cmpArtworkbyDateAcquired)
+    stop = ptime()
+    return round((stop-start)*1000, 2)
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareArtistsbyDate(element1, element2):
     return element1["BeginDate"] < element2["BeginDate"]
 
-def compareArtworksbyAcquired(element1, element2):
+def cmpArtworkbyDateAcquired(element1, element2):
     return element1["DateAcquired"] < element2["DateAcquired"]
 
 # Funciones de ordenamiento
@@ -137,4 +150,4 @@ def sortArtists(catalog):
     sa.sort(catalog["artists"],compareArtistsbyDate)
 
 def sortArtworks(catalog):
-    sa.sort(catalog["artworks"], compareArtworksbyAcquired)
+    sa.sort(catalog["artworks"], cmpArtworkbyDateAcquired)
