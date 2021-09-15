@@ -52,7 +52,7 @@ def loadArtists(catalog):
         model.addArtist(catalog, {"ConstituentID":int(artist["ConstituentID"]),"Gender":artist["Gender"], "DisplayName":artist["DisplayName"], "Nationality":artist["Nationality"], "BeginDate":int(artist["BeginDate"])})
 
 def loadArtworks(catalog):
-    filename= cf.data_dir + "MoMA/Artworks-utf8-small.csv"
+    filename= cf.data_dir + "MoMA/Artworks-utf8-10pct.csv"
     input_file = csv.DictReader(open(filename, encoding="utf-8"))
     for artwork in input_file:
         filtered = {"Title":artwork["Title"], 
@@ -103,8 +103,8 @@ def sortArtworks(catalog):
     model.sortArtworks(catalog)
 
 #Lab4
-def sortingTest(catalog, sample, algo):
-    return model.sortingTest(catalog, sample, algo)
+def sortingTests(catalog, sample, algo):
+    return model.sortingTests(catalog, sample, algo)
 
 # Funciones de consulta sobre el catálogo
 def getLastThree(catalog):

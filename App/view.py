@@ -24,8 +24,9 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+import sys
 assert cf
-
+sys.setrecursionlimit(100000000)
 
 """
 La vista se encarga de la interacción con el usuario
@@ -119,9 +120,16 @@ while True:
     elif int(inputs[0]) == 3:
         prueba = input("Ingrese el numero 1 si desea hacer pruebas de ordenamiento: ")
         if prueba == "1":
-            muestra = int(input("Ingrese el tamaño que desea de muestra: "))
+            #muestra = int(input("Ingrese el tamaño que desea de muestra: "))
             algo = int(input("Ingrese un numero del 1 al 4 para escoger el tipo de ordenamiento (Insertion, Shell, Merge o Quick Sorts) :"))
-            results = controller.sortingTests(catalog, muestra, algo)
+            a = {1: "Insertion", 2:"Shell", 3:"Merge", 4:"Quicksort"}
+            muestra = lt.size(catalog["artworks"])
+            suma = 0
+            for _ in range(5):
+                results = controller.sortingTests(catalog, muestra, algo)
+                suma += results[0]
+                print(f"La prueba tomó {results[0]} ms y es de tamaño {results[1]}")
+            print(f"El promedio fue {suma/5} para tamaño {muestra} y ordenamiento {a[algo]}")
         """
         Se comenta la implementacion del requerimiento ya que los datos no estan ordenados
         """

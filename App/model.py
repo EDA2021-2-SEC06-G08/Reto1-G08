@@ -127,7 +127,7 @@ def getArtworksCronOrder(catalog, idate, fdate):
     return datos
     
 #Lab4
-def sortingTest(catalog, sample, algo):
+def sortingTests(catalog, sample, algo):
     algorithm = {1:ins, 2: sa, 3: ms, 4: qs}
     maxs = lt.size(catalog["artworks"])
     sublist = lt.subList(catalog["artworks"], 1, sample if sample < maxs else maxs)
@@ -135,7 +135,7 @@ def sortingTest(catalog, sample, algo):
     start = ptime()
     algorithm[algo].sort(sublist, cmpArtworkbyDateAcquired)
     stop = ptime()
-    return round((stop-start)*1000, 2)
+    return round((stop-start)*1000, 2), sample if sample < maxs else maxs
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
