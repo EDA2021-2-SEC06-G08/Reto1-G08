@@ -25,7 +25,6 @@
  """
 
 
-from os import startfile
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import mergesort as ms
@@ -134,7 +133,6 @@ def getLastThree(catalog):
     return lt.iterator(last3Artists), lt.iterator(last3Artworks)
 @timer
 def getArtistsCronOrder(catalog, iyear, fyear):
-    #Mirar si hacer busqueda binaria para encontrar donde empezar
     datos = {"NumTot":0,
             "Primeros3":lt.newList("ARRAY_LIST"),
             "Ultimos3":None}
@@ -408,7 +406,7 @@ def calculateCost(obra):
     if obra["Diameter (cm)"] and obra["Depth (cm)"]:
         costos["M^3cir"] = 72*(((obra["Diameter (cm)"]/100/2)**2) * pi * (obra["Depth (cm)"]/100))
     if obra["Diameter (cm)"]:
-        costos["M^2cir"] = 72*(((obra["Diamater (cm)"]/100/2)**2) * pi)
+        costos["M^2cir"] = 72*(((obra["Diameter (cm)"]/100/2)**2) * pi)
     
     maxi = 0
     for valor in costos.values():
