@@ -128,19 +128,28 @@ def printClasificationByNation(data):
         print(f"{(vals[0].strip() if vals[0] != '' else 'Unknown').center(13,' ')}|{str(vals[1]).center(10, ' ')}")
     print("-"*24)
     print("\n")
-    print(f"The TOP nacionality in the museum is: American with {len(data[1])} unique pieces.")
+    print(f"The TOP nacionality in the museum is: {data[2]} with {lt.size(data[1])} unique pieces.")
     print("the first and last 3 objects in the american list are:")
-    print(f" Title\tArtists\tDate\tMedium\tDimensions")
-    for j in range(0,3):
-        i = data[1][j]
-        print(f" {i['Title']}\t{', '.join(i['Artists'])}\t{i['Date']}\t{i['Dimensions']} ")
-    for j in range(len(data[1])-3, len(data[1])):
-        i = data[1][j]
-        print(f" {i['Title']}\t{', '.join(i['Artists'])}\t{i['Date']}\t{i['Dimensions']} ")
+    for j in range(1,4):
+        i = lt.getElement(data[1],j)
+        print(f" Title: {i['Title']}, Artists: {', '.join(i['Artists'])}, Date: {i['Date'] if i['Date'] != 0 else 'Unknown'}, Dimensions: {i['Dimensions'] if i['Dimensions'] != None and i['Dimensions'] != '' else 'Unknown' } ")
+    for j in range(lt.size(data[1])-2, lt.size(data[1])+1):
+        i = lt.getElement(data[1], j)
+        print(f" Title: {i['Title']}, Artists: {', '.join(i['Artists'])}, Date: {i['Date'] if i['Date'] != 0 else 'Unknown'}, Dimensions: {i['Dimensions'] if i['Dimensions'] != None and i['Dimensions'] != '' else 'Unknown' } ")
 
-
-  
-
+def printTransportArtwDepartment(data, department):
+    print(f"The MoMA is going to transport {data['Tot']} desde {department}")
+    print(f"Estimated cargo weight (kg): {data['Weight']}")
+    print(f"Estimated cargo cost (USD): {data['Cost']}")
+    print("")
+    print("The TOP 5 most expensive items to transport are:")
+    print("")
+    for i in lt.iterator(data["5priciest"]):
+        print(f'Title: {i["Title"]}, Artists: {", ".join(i["Artists"])}, Classification: {i["Classification"]}, Date: {i["Date"]}, Medium: {i["Medium"]}, Dimensions: {i["Dimensions"]}, Cost: {i["Cost"]}')
+        print("")
+    for i in lt.iterator(data["5oldest"]):
+        print(f'Title: {i["Title"]}, Artists: {", ".join(i["Artists"])}, Classification: {i["Classification"]}, Date: {i["Date"]}, Medium: {i["Medium"]}, Dimensions: {i["Dimensions"]}, Cost: {i["Cost"]}')
+        print("")
 
 catalog = None
 """
@@ -184,7 +193,7 @@ while True:
         department = input("Ingrese el departamento")
         transport = controller.transportArtwDepartment(catalog, department)
         if transport:
-            pass
+            printTransportArtwDepartment(transport, department)
         else:
             print("No ingreso un departamento del museo")
 

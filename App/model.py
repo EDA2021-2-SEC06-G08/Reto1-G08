@@ -25,7 +25,7 @@
  """
 
 
-from enum import unique
+from os import startfile
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import mergesort as ms
@@ -39,6 +39,15 @@ assert cf
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
 """
+
+def timer(func):
+    def wraper(*args, **kwargs):
+        start = ptime()
+        result = func(*args,**kwargs)
+        stop = ptime()
+        print(f"La función tardo {(stop-start)*1000} ms")
+        return result
+    return wraper
 
 # Construccion de modelos
 def newCatalog():
@@ -123,7 +132,7 @@ def getLastThree(catalog):
     last3Artists = lt.subList(catalog["artists"]["byDate"], sizeArtists-2, 3)
     last3Artworks = lt.subList(catalog["artworks"]["byDate"], sizeArtworks-2, 3)
     return lt.iterator(last3Artists), lt.iterator(last3Artworks)
-
+@timer
 def getArtistsCronOrder(catalog, iyear, fyear):
     #Mirar si hacer busqueda binaria para encontrar donde empezar
     datos = {"NumTot":0,
@@ -189,7 +198,7 @@ def binSearch(value, list, key):
             upper = mid - 1 
     
     return -1
-
+@timer
 def getArtworksCronOrder(catalog, idate,fdate):
     idate = toDate(idate)
     fdate = toDate(fdate)
@@ -202,7 +211,6 @@ def getArtworksCronOrder(catalog, idate,fdate):
     pos = ceilSearch(idate, datos, "DateAcquired")
     maxi = 0
     artists = catalog["artists"]["byId"]
-    print(pos)
     if pos[1]:
         for i in range(pos[0]-1, 1, -1):
             elem = lt.getElement(datos,i)
@@ -273,7 +281,7 @@ def getArtworksByMedium(catalog, name):
             datos["TotObras"] += 1
     datos["ObrasMedMasUsado"] = medios[datos["MedMasUsado"]]
     return datos 
-
+@timer
 def clasifyByNation(catalog):
     obras = catalog["artworks"]["byDate"]
     artists = catalog["artists"]["byId"]
@@ -303,9 +311,11 @@ def clasifyByNation(catalog):
         
         for nation in nations:
             if nation not in UniqueNationalities:
-                UniqueNationalities[nation]  = [adjust]
+                UniqueNationalities[nation]  = lt.newList("ARRAY_LIST")
+                lt.addLast(UniqueNationalities[nation], adjust)
             else:
-                UniqueNationalities[nation].append(adjust)
+
+                lt.addLast(UniqueNationalities[nation], adjust)
 
         for nation, artist in nations.items():
             if nation not in NumWorksbyNationalities:
@@ -323,8 +333,8 @@ def clasifyByNation(catalog):
     countryMost = lt.getElement(size, 1)[0]
     country = UniqueNationalities[countryMost]
 
-    return size, country
-
+    return size, country, countryMost
+@timer
 def transportArtwDepartment(catalog, department):
     obras = catalog["artworks"]["byDepartment"]
     artists = catalog["artists"]["byId"]
@@ -435,3 +445,5 @@ def sortArtworks(catalog):
     ms.sort(catalog["artworks"]["byAcquisitionDate"], cmpArtworksbyDateAcquired)
     ms.sort(catalog["artworks"]["byDepartment"], cmpArtworksbyDepartment)
     ms.sort(catalog["artworks"]["byDate"], cmpArtworksbyDate)
+
+#decorador para medir tiempo
