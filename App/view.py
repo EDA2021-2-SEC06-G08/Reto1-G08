@@ -43,13 +43,14 @@ def printMenu():
     print("4- Clasificar las obras de un artista por técnica")
     print("5- Clasificar las obras por la nacionalidad de sus creadores")
     print("6- Transportar obras de un departamento")
+    print("7- Proponer nueva exposición")
     print("0- Salir")
 
-def initCatalog(typeList):
+def initCatalog():
     """
     Incializa el catalogo del museo
     """
-    return controller.initCatalog(typeList)
+    return controller.initCatalog()
 
 def loadData(catalog):
     controller.loadData(catalog)
@@ -70,16 +71,18 @@ def printArtistsCronOrder(data, iyear, fyear):
     print(f"Numero total de artistas en el rango de años: {data['NumTot']}")
     print("Primeros 3 artistas rango:")
     for artista in lt.iterator(data["Primeros3"]):
-        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}")
+        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}", end=" ")
+        print(f"and died in {artista['EndDate']}" if artista["EndDate"] != 0 else "and hasn't died.")
     print("-"*100)
     print("Ultimos 3 artistas del rango:")
     for artista in lt.iterator(data["Ultimos3"]):
-        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}")
-
+        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}", end=" ")
+        print(f"and died in {artista['EndDate']}" if artista["EndDate"] != 0 else "and hasn't died.")
 
 def printArtworksCronOrder(data, idate, fdate):
     print(f"Obras adquiridas en orden cronologico desde la fecha {idate} hasta {fdate}")
-    print(f"Numero total de obras en el rango de fechas: {data['NumTot']}")
+    print(f"Numero total de obras en el rango de fechas: {data['NumTot']} por {data['NumArtistas']} artistas diferentes")
+    print(f"De las cuales se adquirieron {data['Purchase']} por modo de compra (Purchase)")
     print("Primeras 3 obras del rango:")
     print("")
     for obra in lt.iterator(data["Primeros3"]):
@@ -107,6 +110,35 @@ def printArtworksByMedium (data, name):
         print(artwork) 
     print(100*"-")
     print("\n")
+
+
+def printClasificationByNation(data):
+    print("\n")
+    print(f"{'='*16} Req No. 4 Inputs {'='*16}")
+    print(f"Ranking countries by their number of artworks in the MoMa. . .")
+    print("\n")
+    print(f"{'='*16} Req No. 4 Answer {'='*16}")
+    print("The TOP 10 Countries in the MoMA are:")
+    print("-"*24)
+    print(f" Nationality | Artworks ")
+    for i, vals in enumerate(lt.iterator(data[0])):
+        if i > 9:
+            break
+        print("-"*24)
+        print(f"{(vals[0].strip() if vals[0] != '' else 'Unknown').center(13,' ')}|{str(vals[1]).center(10, ' ')}")
+    print("-"*24)
+    print("\n")
+    print(f"The TOP nacionality in the museum is: American with {len(data[1])} unique pieces.")
+    print("the first and last 3 objects in the american list are:")
+    print(f" Title\tArtists\tDate\tMedium\tDimensions")
+    for j in range(0,3):
+        i = data[1][j]
+        print(f" {i['Title']}\t{', '.join(i['Artists'])}\t{i['Date']}\t{i['Dimensions']} ")
+    for j in range(len(data[1])-3, len(data[1])):
+        i = data[1][j]
+        print(f" {i['Title']}\t{', '.join(i['Artists'])}\t{i['Date']}\t{i['Dimensions']} ")
+
+
   
 
 
@@ -118,12 +150,11 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        typeL = input("Ingrese el tipo de lista que desee: 1 para Array, cualquier otro valor para SingleLinked")
         print("Cargando información de los archivos ....")
-        catalog = initCatalog(typeL)
+        catalog = initCatalog()
         loadData(catalog)
-        print(f"Artistas cargados: {lt.size(catalog['artists'])}")
-        print(f"Obras cargadas: {lt.size(catalog['artworks'])}")
+        print(f"Artistas cargados: {lt.size(catalog['artists']['byDate'])}")
+        print(f"Obras cargadas: {lt.size(catalog['artworks']['byDate'])}")
         lastThree = controller.getLastThree(catalog)
         printLastThree(lastThree)
 
@@ -145,6 +176,17 @@ while True:
         artworks_co = controller.getArtworksByMedium(catalog, name)
         printArtworksByMedium(artworks_co, name)        
 #Editado
+    elif int(inputs[0]) == 5:
+        by_nation = controller.clasifyByNation(catalog)
+        printClasificationByNation(by_nation)
+    
+    elif int(inputs[0]) == 6:
+        department = input("Ingrese el departamento")
+        transport = controller.transportArtwDepartment(catalog, department)
+        if transport:
+            pass
+        else:
+            print("No ingreso un departamento del museo")
 
     else:
         sys.exit(0)
