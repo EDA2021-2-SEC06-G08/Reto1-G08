@@ -179,7 +179,6 @@ while True:
         adquis_co = controller.getArtworksCronOrder(catalog, idate, fdate)
         printArtworksCronOrder(adquis_co, idate, fdate)
 
-#Editado
     elif int(inputs[0]) == 4:
         name = input("Ingrese el nombre del artista: ")
         artworks_co = controller.getArtworksByMedium(catalog, name)
