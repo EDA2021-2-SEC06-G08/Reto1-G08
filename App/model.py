@@ -296,29 +296,6 @@ def getArtworksByMedium(catalog, name):   #qué pasa si el nombre no tiene un co
             "ObrasMedMasUsado": ObrasMedMasUsado}
     return dict_respuestas
 
-    
-    """datos = {"TotObras": 0,
-            "TotMedios": 0,
-            "MedMasUsado": None,
-            "constID": catalog["artists_names"][name],
-            "num_mayor": 0}
-    medios = {}     
-    for i in lt.iterator(catalog["artworks"]):      
-        if datos["constID"] in i["ConstituentID"] :
-            if i["Medium"] in medios:
-                dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
-                lt.addLast(medios[i["Medium"]], dicc)
-            if i["Medium"] not in medios:
-                medios[i["Medium"]] = lt.newList("ARRAY_LIST")
-                dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
-                lt.addLast(medios[i["Medium"]], dicc)
-                datos["TotMedios"] += 1    
-            if lt.size(medios[i["Medium"]]) > datos["num_mayor"]: #que pasa si hay dos tecnicas iguales en cantidad de obras?
-                datos["num_mayor"] = lt.size(medios[i["Medium"]])    
-                datos["MedMasUsado"] = medios[i["Medium"]]["elements"][0]["Medio"] 
-            datos["TotObras"] += 1
-    datos["ObrasMedMasUsado"] = medios[datos["MedMasUsado"]]
-    return datos """
 @timer
 def clasifyByNation(catalog):
     obras = catalog["artworks"]["byDate"]
