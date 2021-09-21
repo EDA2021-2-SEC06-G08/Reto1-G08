@@ -261,15 +261,15 @@ def getArtworksByMedium(catalog, name):   #qué pasa si el nombre no tiene un co
     medios = lt.newList("ARRAY_LIST")
     obras = lt.newList("ARRAY_LIST")
     num_obras = 0
-    for artist in lt.iterator(catalog["artists"]):
+    for artist in lt.iterator(catalog["artists"]):   # peor caso O(n)) n: num arstistas
         if artist["DisplayName"] == name:
             constID = artist["ConstituentID"] 
             break
-    if constID is not None:
-        for obra in lt.iterator(catalog["artworks"]):
-            if constID in obra["ConstituentID"]:
+    if constID is not None:       
+        for obra in lt.iterator(catalog["artworks"]):     # O(m) m: num obras
+            if constID in obra["ConstituentID"]:        # O(m)
                 num_obras += 1
-                if obra["Medium"] in medios["elements"]:
+                if obra["Medium"] in medios["elements"]:      #   O(z) z: cantidad de obras del artista <= m 
                     dicc = {"Titulo": obra["Title"], "Fecha de la obra": obra["Date"], "Medio": obra["Medium"], "Dimensiones": obra["Dimensions"]} 
                     pos = lt.isPresent(medios, obra["Medium"]) -1
                     lt.addLast(obras["elements"][pos], dicc)
@@ -281,10 +281,10 @@ def getArtworksByMedium(catalog, name):   #qué pasa si el nombre no tiene un co
     MedRecurrente= None
     mayor = 0
     ObrasMedMasUsado = None
-    for medio in lt.iterator(medios):
+    for medio in lt.iterator(medios):  #  O(y) y: cantidad de medios <= m  
         pos = lt.isPresent(medios, medio) -1
-        tamaño = lt.size(obras["elements"][pos])
-        if tamaño > mayor:
+        tamaño = lt.size(obras["elements"][pos])     
+        if tamaño > mayor:     # O(y)
             MedRecurrente = medio
             mayor = tamaño 
             ObrasMedMasUsado = obras["elements"][pos]
