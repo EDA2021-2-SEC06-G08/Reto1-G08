@@ -94,6 +94,22 @@ def printArtworksCronOrder(data, idate, fdate):
         print(f"{obra['Title']} por {nombres}, fecha: {obra['Date']}, Medio: {obra['Medium']}, Dimensiones: {obra['Dimensions']}")
         print("")
 
+
+def printArtworksByMedium (data, name):
+    print("\n")
+    print(f"{41*'-'} Req. No.3 Answer {41*'-'}")
+    print(f"{name} with MoMA ID {data['constID']} has {data['TotObras']} pieces in his/her name at the museum.")
+    print(f"There are {data['TotMedios']} different mediums/techniques in his/her work.\n")
+    print(f"His/her most used Medium/Technique is {data['MedMasUsado']} with {lt.size(data['ObrasMedMasUsado'])} pieces.")
+    print(f"These pieces are:")
+    print(100*"-")
+    for artwork in lt.iterator(data["ObrasMedMasUsado"]): 
+        print(artwork) 
+    print(100*"-")
+    print("\n")
+  
+
+
 catalog = None
 """
 Menu principal
@@ -118,25 +134,18 @@ while True:
         printArtistsCronOrder(artis_co, iyear, fyear)
 
     elif int(inputs[0]) == 3:
-        prueba = input("Ingrese el numero 1 si desea hacer pruebas de ordenamiento: ")
-        if prueba == "1":
-            #muestra = int(input("Ingrese el tamaño que desea de muestra: "))
-            algo = int(input("Ingrese un numero del 1 al 4 para escoger el tipo de ordenamiento (Insertion, Shell, Merge o Quick Sorts) :"))
-            a = {1: "Insertion", 2:"Shell", 3:"Merge", 4:"Quicksort"}
-            muestra = lt.size(catalog["artworks"])
-            suma = 0
-            for _ in range(5):
-                results = controller.sortingTests(catalog, muestra, algo)
-                suma += results[0]
-                print(f"La prueba tomó {results[0]} ms y es de tamaño {results[1]}")
-            print(f"El promedio fue {suma/5} para tamaño {muestra} y ordenamiento {a[algo]}")
-        """
-        Se comenta la implementacion del requerimiento ya que los datos no estan ordenados
-        """
-        # idate = input("Ingrese la fecha inicial (AAAA-MM-DD): ")
-        # fdate = input("Ingrese la fecha final (AAAA-MM-DD): ")
-        # adquis_co = controller.getArtworksCronOrder(catalog, idate, fdate)
-        # printArtworksCronOrder(adquis_co, idate, fdate)
+        idate = input("Ingrese la fecha inicial (AAAA-MM-DD): ")
+        fdate = input("Ingrese la fecha final (AAAA-MM-DD): ")
+        adquis_co = controller.getArtworksCronOrder(catalog, idate, fdate)
+        printArtworksCronOrder(adquis_co, idate, fdate)
+
+#Editado
+    elif int(inputs[0]) == 4:
+        name = input("Ingrese el nombre del artista: ")
+        artworks_co = controller.getArtworksByMedium(catalog, name)
+        printArtworksByMedium(artworks_co, name)        
+#Editado
+
     else:
         sys.exit(0)
 sys.exit(0)

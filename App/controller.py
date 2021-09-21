@@ -120,5 +120,9 @@ def getArtworksCronOrder(catalog, idate, fdate):
 
     return model.getArtworksCronOrder(catalog, toDate(idate), toDate(fdate))
 
+def getArtworksByMedium(catalog, name):
+
+    return model.getArtworksByMedium(catalog, name)
+
 
 

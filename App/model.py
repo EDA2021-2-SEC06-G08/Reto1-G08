@@ -25,6 +25,7 @@
  """
 
 
+from typing import Counter
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import shellsort as sa, insertionsort as ins, mergesort as ms, quicksort as qs
@@ -136,6 +137,34 @@ def sortingTests(catalog, sample, algo):
     algorithm[algo].sort(sublist, cmpArtworkbyDateAcquired)
     stop = ptime()
     return round((stop-start)*1000, 2), sample if sample < maxs else maxs
+
+
+
+
+def getArtworksByMedium(catalog, name):
+    datos = {"TotObras": 0,
+            "TotMedios": 0,
+            "MedMasUsado": None,
+            "constID": catalog["artists_names"][name],
+            "num_mayor": 0}
+    medios = {}     
+    for i in lt.iterator(catalog["artworks"]):         #[{obra1}, {obra2},...]
+        if datos["constID"] in i["ConstituentID"] :
+            if i["Medium"] in medios:
+                dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
+                lt.addLast(medios[i["Medium"]], dicc)
+            if i["Medium"] not in medios:
+                medios[i["Medium"]] = lt.newList("ARRAY_LIST")
+                dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
+                lt.addLast(medios[i["Medium"]], dicc)
+                datos["TotMedios"] += 1    
+            if lt.size(medios[i["Medium"]]) > datos["num_mayor"]: #que pasa si hay dos tecnicas iguales en cantidad de obras?
+                datos["num_mayor"] = lt.size(medios[i["Medium"]])    
+                datos["MedMasUsado"] = medios[i["Medium"]]["elements"][0]["Medio"] 
+            datos["TotObras"] += 1
+    datos["ObrasMedMasUsado"] = medios[datos["MedMasUsado"]]
+    return datos 
+
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
