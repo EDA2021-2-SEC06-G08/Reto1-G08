@@ -128,14 +128,54 @@ def getArtworksCronOrder(catalog, idate, fdate):
 
 
 
-def getArtworksByMedium(catalog, name):
-    datos = {"TotObras": 0,
+def getArtworksByMedium(catalog, name):   #qué pasa si el nombre no tiene un constituend id porque no existe
+    constID = None                        #eliminar ["elements"] si se puede
+    medios = lt.newList("ARRAY_LIST")
+    obras = lt.newList("ARRAY_LIST")
+    num_obras = 0
+    for artist in lt.iterator(catalog["artists"]):
+        if artist["DisplayName"] == name:
+            constID = artist["ConstituentID"] 
+            break
+    if constID is not None:
+        for obra in lt.iterator(catalog["artworks"]):
+            if constID in obra["ConstituentID"]:
+                num_obras += 1
+                if obra["Medium"] in medios["elements"]:
+                    dicc = {"Titulo": obra["Title"], "Fecha de la obra": obra["Date"], "Medio": obra["Medium"], "Dimensiones": obra["Dimensions"]} 
+                    pos = lt.isPresent(medios, obra["Medium"]) -1
+                    lt.addLast(obras["elements"][pos], dicc)
+                else:
+                    dicc = {"Titulo": obra["Title"], "Fecha de la obra": obra["Date"], "Medio": obra["Medium"], "Dimensiones": obra["Dimensions"]}
+                    lt.addLast(medios, obra["Medium"])
+                    lt.addLast(obras, lt.newList("ARRAY_LIST"))
+                    lt.addLast(obras["elements"][lt.size(obras)-1], dicc) 
+    MedRecurrente= None
+    mayor = 0
+    ObrasMedMasUsado = None
+    for medio in lt.iterator(medios):
+        pos = lt.isPresent(medios, medio) -1
+        tamaño = lt.size(obras["elements"][pos])
+        if tamaño > mayor:
+            MedRecurrente = medio
+            mayor = tamaño 
+            ObrasMedMasUsado = obras["elements"][pos]
+    dict_respuestas = {"TotObras": num_obras,
+            "TotMedios": lt.size(medios),
+            "MedMasUsado": MedRecurrente,
+            "constID": constID,
+            "num_mayor": mayor,
+            "ObrasMedMasUsado": ObrasMedMasUsado}
+    return dict_respuestas
+
+    
+    """datos = {"TotObras": 0,
             "TotMedios": 0,
             "MedMasUsado": None,
             "constID": catalog["artists_names"][name],
             "num_mayor": 0}
     medios = {}     
-    for i in lt.iterator(catalog["artworks"]):         #[{obra1}, {obra2},...]
+    for i in lt.iterator(catalog["artworks"]):      
         if datos["constID"] in i["ConstituentID"] :
             if i["Medium"] in medios:
                 dicc = {"Titulo": i["Title"], "Fecha de la obra": i["Date"], "Medio": i["Medium"], "Dimensiones": i["Dimensions"]} 
@@ -150,7 +190,7 @@ def getArtworksByMedium(catalog, name):
                 datos["MedMasUsado"] = medios[i["Medium"]]["elements"][0]["Medio"] 
             datos["TotObras"] += 1
     datos["ObrasMedMasUsado"] = medios[datos["MedMasUsado"]]
-    return datos 
+    return datos"""
 
 
 
