@@ -44,6 +44,7 @@ def timer(func):
         start = ptime()
         result = func(*args,**kwargs)
         stop = ptime()
+        print("\n")
         print(f"La función tardo {(stop-start)*1000} ms")
         return result
     return wraper
@@ -255,18 +256,18 @@ def getArtworksCronOrder(catalog, idate,fdate):
         lt.addLast(res["Ultimos3"], with_names)
     return res
 
-
-def getArtworksByMedium(catalog, name):   #qué pasa si el nombre no tiene un constituend id porque no existe
-    constID = None                        #eliminar ["elements"] si se puede
+@timer
+def getArtworksByMedium(catalog, name):   
+    constID = None                       
     medios = lt.newList("ARRAY_LIST")
     obras = lt.newList("ARRAY_LIST")
     num_obras = 0
-    for artist in lt.iterator(catalog["artists"]):   # peor caso O(n)) n: num arstistas
+    for artist in lt.iterator(catalog["artists"]["byId"]):   # peor caso O(n)) n: num arstistas
         if artist["DisplayName"] == name:
             constID = artist["ConstituentID"] 
             break
     if constID is not None:       
-        for obra in lt.iterator(catalog["artworks"]):     # O(m) m: num obras
+        for obra in lt.iterator(catalog["artworks"]["byDate"]):     # O(m) m: num obras
             if constID in obra["ConstituentID"]:        # O(m)
                 num_obras += 1
                 if obra["Medium"] in medios["elements"]:      #   O(z) z: cantidad de obras del artista <= m 
@@ -431,7 +432,55 @@ def calculateCost(obra):
         return 48.0
     else:
         return maxi
-    
+
+
+@timer
+def NewExposition(catalog, añoi, añof, area):
+    data = {"totObras": 0, 
+            "areaprox": 0,
+            "lista": lt.newList("ARRAY_LIST")}
+    obras = catalog["artworks"]["byDate"]
+    for obra in lt.iterator(obras):                           #O(n)
+        if obra["Date"] >= añoi and obra["Date"] <= añof: 
+            if obra["Height (cm)"] != 0 and obra["Height (cm)"] != None and obra["Width (cm)"] != 0 and obra["Width (cm)"] != None and obra["Diameter (cm)"] == None and obra["Length (cm)"] == None and obra["Weight (kg)"] == None:
+                areacalc = (obra["Height (cm)"]/100)*(obra["Width (cm)"]/100)
+                if (data["areaprox"] + areacalc) <= area:
+                    data["areaprox"] += areacalc
+                    dicc = {"Titulo": obra["Title"], "Artista(s)": obra["ConstituentID"],
+                            "Fecha": obra["DateAcquired"], "Clasificación": obra["Classification"],
+                            "Medio": obra["Medium"], "Dimensiones": obra["Dimensions"]}
+                    lt.addLast(data["lista"], dicc)
+    for artwork in lt.iterator(data["lista"]):        #mejorar, está O(m^2 * n)
+        names = lt.newList("ARRAY_LIST")
+        for ID in artwork["Artista(s)"]:
+            for artista in lt.iterator(catalog["artists"]["byDate"]):
+                if ID == artista["ConstituentID"]:
+                    lt.addLast(names, artista["DisplayName"])
+        artwork["Artista(s)"] = names["elements"]
+    data["totObras"] = lt.size(data["lista"])
+    data["5primeras"] = lt.subList(data["lista"], 1, 5)
+    data["5ultimas"] = lt.subList(data["lista"], lt.size(data["lista"])-5, 5)
+    return data          
+
+"""
+        "Title":artwork["Title"], 
+        "ConstituentID":eval(artwork["ConstituentID"]),
+        "Date":dateToInt(artwork["Date"]),
+        "Medium":artwork["Medium"],
+        "Dimensions":artwork["Dimensions"],
+        "CreditLine":artwork["CreditLine"],
+        "Department":artwork["Department"],
+        "Classification":artwork["Classification"],
+        "Weight (kg)":toFloat(artwork["Weight (kg)"]),
+        "Width (cm)":toFloat(artwork["Width (cm)"]),
+        "Length (cm)":toFloat(artwork["Length (cm)"]),
+        "Height (cm)":toFloat(artwork["Height (cm)"]),
+        "Depth (cm)":toFloat(artwork["Depth (cm)"]),
+        "Circumference (cm)":toFloat(artwork["Circumference (cm)"]),
+        "Diameter (cm)":toFloat(artwork["Diameter (cm)"]),
+        "DateAcquired":toDate(artwork["DateAcquired"]),
+        "Seat Height (cm)":toFloat(artwork["Seat Height (cm)"])
+"""
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def cmpArtistsbyDate(element1, element2):
