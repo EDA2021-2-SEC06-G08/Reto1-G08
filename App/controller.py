@@ -41,13 +41,13 @@ def loadData(catalog):
     sortArtworks(catalog)
 
 def loadArtists(catalog):
-    filename = cf.data_dir + "MoMa/Artists-utf8-20pct.csv"
+    filename = cf.data_dir + "MoMa/Artists-utf8-small.csv"
     input_file = csv.DictReader(open(filename, encoding="utf-8"))
     for artist in input_file:
         model.addArtist(catalog, artist)
 
 def loadArtworks(catalog):
-    filename= cf.data_dir + "MoMA/Artworks-utf8-20pct.csv"
+    filename= cf.data_dir + "MoMA/Artworks-utf8-small.csv"
     input_file = csv.DictReader(open(filename, encoding="utf-8"))
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
@@ -88,5 +88,6 @@ def clasifyByNation(catalog):
 def transportArtwDepartment(catalog, department):
     return model.transportArtwDepartment(catalog, department)
 
+def NewExposition(catalog, añoi, añof, area):
 
-
+    return model.NewExposition(catalog, añoi, añof, area)
