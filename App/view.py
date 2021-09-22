@@ -209,7 +209,11 @@ while True:
     elif int(inputs[0]) == 4:
         name = input("Ingrese el nombre del artista: ")
         artworks_co = controller.getArtworksByMedium(catalog, name)
-        printArtworksByMedium(artworks_co, name)        
+        printArtworksByMedium(artworks_co, name)
+        #if artworks_co:
+            # printArtworksByMedium
+        # else:
+        #   print("El artista especificado no esta")        
 
     elif int(inputs[0]) == 5:
         by_nation = controller.clasifyByNation(catalog)

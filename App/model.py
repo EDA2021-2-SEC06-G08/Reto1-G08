@@ -228,13 +228,16 @@ def getArtworksCronOrder(catalog, idate,fdate):
                 res["NumArtistas"] += 1
             if res["NumTot"] <= 3:
                 names = []
+                #names = newList("ARRAY")
                 for id in elem["ConstituentID"]:
                     index = binSearch(id, artists, "ConstituentID")
                     if index >= 1:
                         nombre = lt.getElement(artists, index)["DisplayName"]
                         names.append(nombre)
+                        #lt.addLast(names, nombre)
                     else:
                         names.append("Unknown")
+                        #lt.addLast(names, "Unknown")
                 with_names = {key : value for key, value in elem.items() if key != "ConstituentID"}
                 with_names["Artists"] = names
                 lt.addLast(res["Primeros3"], with_names)
@@ -270,7 +273,7 @@ def getArtworksByMedium(catalog, name):
         for obra in lt.iterator(catalog["artworks"]["byDate"]):     # O(m) m: num obras
             if constID in obra["ConstituentID"]:        # O(m)
                 num_obras += 1
-                if obra["Medium"] in medios["elements"]:      #   O(z) z: cantidad de obras del artista <= m 
+                if obra["Medium"] in medios["elements"]:      #   O(z) z: cantidad de obras del artista <= m lt.isPresent(mediios, obra["Medium"])
                     dicc = {"Titulo": obra["Title"], "Fecha de la obra": obra["Date"], "Medio": obra["Medium"], "Dimensiones": obra["Dimensions"]} 
                     pos = lt.isPresent(medios, obra["Medium"]) -1
                     lt.addLast(obras["elements"][pos], dicc)
@@ -299,6 +302,12 @@ def getArtworksByMedium(catalog, name):
 
 @timer
 def clasifyByNation(catalog):
+    """
+    Carlos me dijo que quitara con los diccionarios pero no me alcanzo el tiempo porque tenía un parcial para entregar el mismo dia a las 12
+    Igual la forma en como lo haria si no fuera con diccionario seria tener matrices en las cuales la primera posicion de las listas internas sea el pais
+    y agregar los datos igual a como esta planteado pero con funciones de busqueda de un elemento en la primera posicion de las listas internas pero en general
+    la estructura seria la misma
+    """
     obras = catalog["artworks"]["byDate"]
     artists = catalog["artists"]["byId"]
     NumWorksbyNationalities = {}
@@ -316,8 +325,10 @@ def clasifyByNation(catalog):
                 name = lt.getElement(artists,pos)["DisplayName"]
                 Nationality = lt.getElement(artists,pos)["Nationality"]
             if "Artists" not in adjust:
+                #adjust["Artists"] = lt.newList("ARRAY")
                 adjust["Artists"] = [name]
             else:
+                #lt.addLast(adjust["Artists"], name)
                 adjust["Artists"].append(name)
             
             if Nationality not in nations:
@@ -385,12 +396,15 @@ def transportArtwDepartment(catalog, department):
         cost = calculateCost(obra)
         res["Cost"] += cost
         artists2 = []
+        #artists2 = lt.NewList("ARRAY")
         for id in obra["ConstituentID"]:
             index = binSearch(id,artists, "ConstituentID")
             if index > 0:
+                # lt.addLast(artis2,lt.getElement(artists, index)["DisplayName"] )
                 artists2.append(lt.getElement(artists, index)["DisplayName"])
             else:
                 artists2.append("Unknown")
+                # lt.addLast(artis2,"Unknown" )
         adjust = {key:value for key,value in obra.items() if key != "ConstituentID"}
         adjust["Cost"] = cost
         adjust["Artists"] = artists2
@@ -409,6 +423,7 @@ def transportArtwDepartment(catalog, department):
 
 def calculateCost(obra):
     costos = {"Kg":0, "M^2caj1":0,"M^2caj2":0, "M^3caj":0,"M^2cir":0, "M^3cir":0 }
+    #Se hice casi todos los caso excepto el volumen con depth
     if obra["Weight (kg)"]:
         costos["Kg"] = 72*obra["Weight (kg)"]
     if obra["Length (cm)"] and obra["Height (cm)"] and obra["Width (cm)"]:
@@ -421,6 +436,8 @@ def calculateCost(obra):
         costos["M^2caj3"] = 72*((obra["Width (cm)"]/100) * (obra["Length (cm)"]/100)) 
     if obra["Diameter (cm)"] and obra["Depth (cm)"]:
         costos["M^3cir"] = 72*(((obra["Diameter (cm)"]/100/2)**2) * pi * (obra["Depth (cm)"]/100))
+    if obra["Diameter (cm)"] and obra["Height (cm)"]:
+        costos["M^3cir1"] = 72*(((obra["Diameter (cm)"]/100/2)**2) * pi * (obra["Height (cm)"]/100))
     if obra["Diameter (cm)"]:
         costos["M^2cir"] = 72*(((obra["Diameter (cm)"]/100/2)**2) * pi)
     
@@ -431,56 +448,59 @@ def calculateCost(obra):
     if maxi == 0:
         return 48.0
     else:
-        return maxi
-
+        return maxi  
 
 @timer
-def NewExposition(catalog, añoi, añof, area):
+def NewCamiloExposition(catalog, añoi, añof, area):
+    """
+    El bono lo hicimos los dos solo que le puse mi nombre a la función porque me base en un codigo que el hizo y no queria cambiar lo que el había hecho
+    att: Camilo
+    """
     data = {"totObras": 0, 
             "areaprox": 0,
             "lista": lt.newList("ARRAY_LIST")}
     obras = catalog["artworks"]["byDate"]
-    for obra in lt.iterator(obras):                           #O(n)
-        if obra["Date"] >= añoi and obra["Date"] <= añof: 
-            if obra["Height (cm)"] != 0 and obra["Height (cm)"] != None and obra["Width (cm)"] != 0 and obra["Width (cm)"] != None and obra["Diameter (cm)"] == None and obra["Length (cm)"] == None and obra["Weight (kg)"] == None:
-                areacalc = (obra["Height (cm)"]/100)*(obra["Width (cm)"]/100)
+    pos = ceilSearch(añoi, obras, "Date")
+    
+    if pos[1]:
+        for i in range(pos[0]-1, 1, -1):
+            elem = lt.getElement(obras,i)["Date"]
+            if elem < añoi:
+                pos = i + 1
+                break
+    else:
+        pos = pos[0]
+    artists = catalog["artists"]["byId"]
+    for i in range(pos, lt.size(obras)+1):                           #O(p*log(n))
+        obra = lt.getElement(obras, i)
+        if añoi <= obra["Date"] <= añof:
+            if ((obra["Height (cm)"] and obra["Width (cm)"]) or obra["Diameter (cm)"]) and (not obra["Length (cm)"]):
+                if  (obra["Height (cm)"] and obra["Width (cm)"]):
+                    areacalc = (obra["Height (cm)"]/100)*(obra["Width (cm)"]/100)
+                else:
+                    areacalc = (obra["Diameter (cm)"]/100/2)**2*pi
                 if (data["areaprox"] + areacalc) <= area:
+                    names = []
+                    for ID in obra["ConstituentID"]:
+                        p = binSearch(ID, artists, "ConstituentID")
+                        if p > 0:
+                            names.append(lt.getElement(artists, p)["DisplayName"])
+                        else:
+                            names.append("Unknown")
                     data["areaprox"] += areacalc
-                    dicc = {"Titulo": obra["Title"], "Artista(s)": obra["ConstituentID"],
-                            "Fecha": obra["DateAcquired"], "Clasificación": obra["Classification"],
+                    dicc = {"Titulo": obra["Title"], "Artista(s)": names,
+                            "Fecha": obra["Date"], "Clasificación": obra["Classification"],
                             "Medio": obra["Medium"], "Dimensiones": obra["Dimensions"]}
                     lt.addLast(data["lista"], dicc)
-    for artwork in lt.iterator(data["lista"]):        #mejorar, está O(m^2 * n)
-        names = lt.newList("ARRAY_LIST")
-        for ID in artwork["Artista(s)"]:
-            for artista in lt.iterator(catalog["artists"]["byDate"]):
-                if ID == artista["ConstituentID"]:
-                    lt.addLast(names, artista["DisplayName"])
-        artwork["Artista(s)"] = names["elements"]
+        elif obra["Date"] > añof:
+            break
+
+        
     data["totObras"] = lt.size(data["lista"])
     data["5primeras"] = lt.subList(data["lista"], 1, 5)
-    data["5ultimas"] = lt.subList(data["lista"], lt.size(data["lista"])-5, 5)
-    return data          
+    data["5ultimas"] = lt.subList(data["lista"], lt.size(data["lista"])-4, 5)
+    return data         
 
-"""
-        "Title":artwork["Title"], 
-        "ConstituentID":eval(artwork["ConstituentID"]),
-        "Date":dateToInt(artwork["Date"]),
-        "Medium":artwork["Medium"],
-        "Dimensions":artwork["Dimensions"],
-        "CreditLine":artwork["CreditLine"],
-        "Department":artwork["Department"],
-        "Classification":artwork["Classification"],
-        "Weight (kg)":toFloat(artwork["Weight (kg)"]),
-        "Width (cm)":toFloat(artwork["Width (cm)"]),
-        "Length (cm)":toFloat(artwork["Length (cm)"]),
-        "Height (cm)":toFloat(artwork["Height (cm)"]),
-        "Depth (cm)":toFloat(artwork["Depth (cm)"]),
-        "Circumference (cm)":toFloat(artwork["Circumference (cm)"]),
-        "Diameter (cm)":toFloat(artwork["Diameter (cm)"]),
-        "DateAcquired":toDate(artwork["DateAcquired"]),
-        "Seat Height (cm)":toFloat(artwork["Seat Height (cm)"])
-"""
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def cmpArtistsbyDate(element1, element2):

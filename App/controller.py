@@ -90,4 +90,4 @@ def transportArtwDepartment(catalog, department):
 
 def NewExposition(catalog, añoi, añof, area):
 
-    return model.NewExposition(catalog, añoi, añof, area)
+    return model.NewCamiloExposition(catalog, añoi, añof, area)
