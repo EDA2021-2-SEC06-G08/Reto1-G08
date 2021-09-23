@@ -62,6 +62,7 @@ def printLastThree(lastThree):
     i = 3
     for artist, artwork in zip(l3Art, l3Aworks):
         print(f"{position[i]} artista:\n {artist}")
+        print("\n")
         print(f"{positionArt[i]} obra:\n {artwork}")
         print("-"*102)
         i -= 1
@@ -71,13 +72,15 @@ def printArtistsCronOrder(data, iyear, fyear):
     print(f"Numero total de artistas en el rango de años: {data['NumTot']}")
     print("\n")
     print("Primeros 3 artistas rango:")
+    print("\n")
     for artista in lt.iterator(data["Primeros3"]):
-        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}", end=" ")
+        print(f"- {artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}", end=" ")
         print(f"and died in {artista['EndDate']}" if artista["EndDate"] != 0 else "and hasn't died.")
     print("-"*100)
     print("Ultimos 3 artistas del rango:")
+    print("\n")
     for artista in lt.iterator(data["Ultimos3"]):
-        print(f"{artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}", end=" ")
+        print(f"- {artista['DisplayName']} is a {artista['Gender']} {artista['Nationality']} artist borned in the year {artista['BeginDate']}", end=" ")
         print(f"and died in {artista['EndDate']}" if artista["EndDate"] != 0 else "and hasn't died.")
     print("\n")
 
@@ -188,11 +191,15 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
+        print("\n")
         print("Cargando información de los archivos ....")
+        print("\n")
         catalog = initCatalog()
         loadData(catalog)
+        print(100*"-")
         print(f"Artistas cargados: {lt.size(catalog['artists']['byDate'])}")
         print(f"Obras cargadas: {lt.size(catalog['artworks']['byDate'])}")
+        print(100*"-")
         lastThree = controller.getLastThree(catalog)
         printLastThree(lastThree)
 
