@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.arraylist import getElement
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Sorting import mergesort as ms
@@ -57,6 +58,7 @@ def newCatalog():
     }
     catalog["artists"]["byDate"] = lt.newList("ARRAY_LIST")
     catalog["artists"]["byId"] = lt.newList("ARRAY_LIST")
+    catalog["artists"]["byName"] = lt.newList("ARRAY_LIST")
     catalog["artworks"]["byAcquisitionDate"] = lt.newList("ARRAY_LIST")
     catalog["artworks"]["byDepartment"] = lt.newList("ARRAY_LIST")
     catalog["artworks"]["byDate"] = lt.newList("ARRAY_LIST")
@@ -73,6 +75,7 @@ def addArtist(catalog, artist):
     }
     lt.addLast(catalog["artists"]["byDate"], filtered)
     lt.addLast(catalog["artists"]["byId"], filtered)
+    lt.addLast(catalog["artists"]["byName"], filtered)
 
 def addArtwork(catalog, artwork):
     filtered = {"Title":artwork["Title"], 
@@ -260,39 +263,45 @@ def getArtworksCronOrder(catalog, idate,fdate):
     return res
 
 @timer
-def getArtworksByMedium(catalog, name):   
-    constID = None                       
+def getArtworksByMedium(catalog, name):                        
     medios = lt.newList("ARRAY_LIST")
     obras = lt.newList("ARRAY_LIST")
     num_obras = 0
-    for artist in lt.iterator(catalog["artists"]["byId"]):   # peor caso O(n)) n: num arstistas
-        if artist["DisplayName"] == name:
-            constID = artist["ConstituentID"] 
-            break
-    if constID is not None:       
-        for obra in lt.iterator(catalog["artworks"]["byDate"]):     # O(m) m: num obras
-            if constID in obra["ConstituentID"]:        # O(m)
+    artists = catalog["artists"]["byName"]
+    position = binSearch(name, artists, "DisplayName")
+    if position == -1:
+        return False 
+    else:
+        constID = lt.getElement(artists, position)["ConstituentID"] 
+        for obra in lt.iterator(catalog["artworks"]["byDate"]): 
+            """
+            No se hace una busqueda binaria porque se tendría que ordenar por IDs y algunas
+            obras tienen varios artistas. No seria util ordenar solo por la primera posición
+            porque si el artista de interes no está en la primera posición no seria posible 
+            encontrarlo en la busqueda binaria
+            """
+            if constID in obra["ConstituentID"]:   
                 num_obras += 1
-                if obra["Medium"] in medios["elements"]:      #   O(z) z: cantidad de obras del artista <= m lt.isPresent(mediios, obra["Medium"])
+                if lt.isPresent(medios, obra["Medium"]):
                     dicc = {"Titulo": obra["Title"], "Fecha de la obra": obra["Date"], "Medio": obra["Medium"], "Dimensiones": obra["Dimensions"]} 
-                    pos = lt.isPresent(medios, obra["Medium"]) -1
-                    lt.addLast(obras["elements"][pos], dicc)
+                    pos = lt.isPresent(medios, obra["Medium"])        
+                    lt.addLast(lt.getElement(obras, pos), dicc)
                 else:
                     dicc = {"Titulo": obra["Title"], "Fecha de la obra": obra["Date"], "Medio": obra["Medium"], "Dimensiones": obra["Dimensions"]}
                     lt.addLast(medios, obra["Medium"])
                     lt.addLast(obras, lt.newList("ARRAY_LIST"))
-                    lt.addLast(obras["elements"][lt.size(obras)-1], dicc) 
+                    lt.addLast(lt.getElement(obras,lt.size(obras)), dicc)
     MedRecurrente= None
     mayor = 0
     ObrasMedMasUsado = None
-    for medio in lt.iterator(medios):  #  O(y) y: cantidad de medios <= m  
-        pos = lt.isPresent(medios, medio) -1
-        tamaño = lt.size(obras["elements"][pos])     
-        if tamaño > mayor:     # O(y)
+    for medio in lt.iterator(medios):
+        posi = lt.isPresent(medios, medio)
+        tamaño = lt.size(getElement(obras, posi)) 
+        if tamaño > mayor:   
             MedRecurrente = medio
             mayor = tamaño 
-            ObrasMedMasUsado = obras["elements"][pos]
-    dict_respuestas = {"TotObras": num_obras,
+            ObrasMedMasUsado = getElement(obras, posi)
+    dict_respuestas = {"TotObras": num_obras,   #se crea un diccionario solo para hacer más fácil la impresión 
             "TotMedios": lt.size(medios),
             "MedMasUsado": MedRecurrente,
             "constID": constID,
@@ -509,6 +518,9 @@ def cmpArtistsbyDate(element1, element2):
 def cmpArtistsbyId(element1, element2):
     return element1["ConstituentID"] < element2["ConstituentID"] 
 
+def cmpArtistsbyName(element1, element2):
+    return element1["DisplayName"] < element2["DisplayName"]
+
 def cmpArtworksbyDateAcquired(element1, element2):
     return element1["DateAcquired"] < element2["DateAcquired"]
 
@@ -522,6 +534,7 @@ def cmpArtworksbyDate(element1, element2):
 def sortArtists(catalog):
     ms.sort(catalog["artists"]["byDate"],cmpArtistsbyDate)
     ms.sort(catalog["artists"]["byId"], cmpArtistsbyId)
+    ms.sort(catalog["artists"]["byName"], cmpArtistsbyName)
 
 def sortArtworks(catalog):
     ms.sort(catalog["artworks"]["byAcquisitionDate"], cmpArtworksbyDateAcquired)

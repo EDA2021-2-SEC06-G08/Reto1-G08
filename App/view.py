@@ -102,6 +102,8 @@ def printArtworksCronOrder(data, idate, fdate):
 
 
 def printArtworksByMedium (data, name):
+    print(f"{41*'='} Req. No.3 Inputs {41*'='}")
+    print(f"Examine the work of the artist named: {name}")
     print(f"{41*'='} Req. No.3 Answer {41*'='}")
     print(f"{name} with MoMA ID {data['constID']} has {data['TotObras']} pieces in his/her name at the museum.")
     print(f"There are {data['TotMedios']} different mediums/techniques in his/her work.\n")
@@ -209,11 +211,11 @@ while True:
     elif int(inputs[0]) == 4:
         name = input("Ingrese el nombre del artista: ")
         artworks_co = controller.getArtworksByMedium(catalog, name)
-        printArtworksByMedium(artworks_co, name)
-        #if artworks_co:
-            # printArtworksByMedium
-        # else:
-        #   print("El artista especificado no esta")        
+        if artworks_co:
+            printArtworksByMedium(artworks_co, name)
+        else:
+            print("El artista especificado no esta en la base de datos")  
+            print("\n")      
 
     elif int(inputs[0]) == 5:
         by_nation = controller.clasifyByNation(catalog)
